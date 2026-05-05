@@ -58,7 +58,7 @@ git push -u origin main
 
 3. In Vercel:
    - Import the GitHub repository
-   - Set the root directory to `F1rsteholdet`
+   - Use the repository root as the project root
    - Add `NEXT_PUBLIC_SUPABASE_URL`
    - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - Deploy
