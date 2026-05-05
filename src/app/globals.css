@@ -344,6 +344,31 @@ textarea {
   padding: 2rem;
 }
 
+.auth-card-centered {
+  width: min(100%, 460px);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.auth-header {
+  display: grid;
+  gap: 0.6rem;
+  text-align: center;
+  justify-items: center;
+}
+
+.auth-header h1 {
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+}
+
+.auth-header p {
+  margin: 0;
+}
+
+.auth-brand {
+  margin-bottom: 0.75rem;
+}
+
 .auth-card-dark {
   background: linear-gradient(180deg, rgba(12, 31, 49, 0.95), rgba(18, 47, 71, 0.9));
   color: var(--text-inverse);
@@ -362,6 +387,22 @@ textarea {
   display: grid;
   gap: 1rem;
   padding-top: 1rem;
+}
+
+.auth-form-primary {
+  padding-top: 0;
+}
+
+.signup-panel {
+  border-top: 1px solid rgba(19, 38, 59, 0.1);
+  padding-top: 1rem;
+}
+
+.signup-panel summary {
+  cursor: pointer;
+  color: #102234;
+  font-weight: 700;
+  text-align: center;
 }
 
 .message-banner {

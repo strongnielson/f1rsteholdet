@@ -23,53 +23,42 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
 
   return (
     <main className="auth-shell">
-      <div className="auth-grid">
-        <section className="auth-card auth-card-dark">
-          <p className="eyebrow">Member access</p>
-          <h1>Welcome back to F1rsteholdet.</h1>
-          <p>
-            Sign in to continue the trip planning, keep the meetings moving, and add the moments
-            nobody wants forgotten.
-          </p>
-          <div className="hero-panel-card">
-            <strong>How the setup works</strong>
-            <p>
-              Members sign in with email and password, then carry a visible username and profile
-              picture inside the app.
-            </p>
-          </div>
-          <p>
-            <Link href="/">Back to the landing page</Link>
-          </p>
-        </section>
+      <section className="auth-card auth-card-light auth-card-centered">
+        <div className="auth-header">
+          <Link className="brand auth-brand" href="/">
+            <span className="brand-mark">F1</span>
+            <span>F1rsteholdet</span>
+          </Link>
+          <p className="eyebrow">Medlemslogin</p>
+          <h1>Log ind på F1rsteholdet</h1>
+          <p>Brug din mail og adgangskode for at komme ind.</p>
+        </div>
 
-        <section className="auth-card auth-card-light">
-          <p className="eyebrow">Start here</p>
-          <h2>Create account or sign in</h2>
+        {searchParams.error ? <MessageBanner message={searchParams.error} tone="error" /> : null}
+        {searchParams.message ? (
+          <MessageBanner message={searchParams.message} tone="success" />
+        ) : null}
 
-          {searchParams.error ? <MessageBanner message={searchParams.error} tone="error" /> : null}
-          {searchParams.message ? (
-            <MessageBanner message={searchParams.message} tone="success" />
-          ) : null}
+        <div className="auth-forms">
+          <form action={signIn} className="auth-form auth-form-primary">
+            <div className="field field-dark">
+              <label htmlFor="sign-in-email">Email</label>
+              <input id="sign-in-email" name="email" placeholder="navn@email.dk" required type="email" />
+            </div>
+            <div className="field field-dark">
+              <label htmlFor="sign-in-password">Adgangskode</label>
+              <input id="sign-in-password" name="password" required type="password" />
+            </div>
+            <button className="button" type="submit">
+              Log ind
+            </button>
+          </form>
 
-          <div className="auth-forms">
-            <form action={signIn} className="auth-form">
-              <div className="field field-dark">
-                <label htmlFor="sign-in-email">Email</label>
-                <input id="sign-in-email" name="email" placeholder="crew@example.com" required type="email" />
-              </div>
-              <div className="field field-dark">
-                <label htmlFor="sign-in-password">Password</label>
-                <input id="sign-in-password" name="password" required type="password" />
-              </div>
-              <button className="button" type="submit">
-                Sign in
-              </button>
-            </form>
-
+          <details className="signup-panel">
+            <summary>Opret ny bruger</summary>
             <form action={signUp} className="auth-form">
               <div className="field field-dark">
-                <label htmlFor="sign-up-username">Username</label>
+                <label htmlFor="sign-up-username">Brugernavn</label>
                 <input
                   id="sign-up-username"
                   maxLength={24}
@@ -81,24 +70,24 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
                 />
               </div>
               <div className="field field-dark">
-                <label htmlFor="sign-up-name">Full name</label>
+                <label htmlFor="sign-up-name">Fulde navn</label>
                 <input id="sign-up-name" maxLength={60} name="fullName" placeholder="Niels Moller Jensen" type="text" />
               </div>
               <div className="field field-dark">
                 <label htmlFor="sign-up-email">Email</label>
-                <input id="sign-up-email" name="email" placeholder="crew@example.com" required type="email" />
+                <input id="sign-up-email" name="email" placeholder="navn@email.dk" required type="email" />
               </div>
               <div className="field field-dark">
-                <label htmlFor="sign-up-password">Password</label>
+                <label htmlFor="sign-up-password">Adgangskode</label>
                 <input id="sign-up-password" minLength={8} name="password" required type="password" />
               </div>
               <button className="button" type="submit">
-                Create account
+                Opret bruger
               </button>
             </form>
-          </div>
-        </section>
-      </div>
+          </details>
+        </div>
+      </section>
     </main>
   );
 }
