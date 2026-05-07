@@ -9,6 +9,13 @@ type ProfileEditPanelProps = {
   profile: Pick<Profile, "full_name" | "address" | "phone">;
 };
 
+const passwordRulesMessage =
+  "Password skal være mindst 7 tegn og indeholde mindst ét stort bogstav og ét specialtegn.";
+
+function isStrongPassword(password: string) {
+  return password.length >= 7 && /[A-ZÆØÅ]/.test(password) && /[^A-Za-z0-9ÆØÅæøå]/.test(password);
+}
+
 export function ProfileEditPanel({ profile }: ProfileEditPanelProps) {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -23,8 +30,8 @@ export function ProfileEditPanel({ profile }: ProfileEditPanelProps) {
     const password = String(formData.get("password") ?? "");
     const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-    if (password.length < 8) {
-      setPasswordError("Adgangskoden skal være mindst 8 tegn.");
+    if (!isStrongPassword(password)) {
+      setPasswordError(passwordRulesMessage);
       return;
     }
 
@@ -62,12 +69,22 @@ export function ProfileEditPanel({ profile }: ProfileEditPanelProps) {
 
       <form className="profile-edit-form profile-password-form" onSubmit={handlePasswordChange}>
         <strong>Skift password</strong>
-        <input name="password" placeholder="Nyt password" type="password" autoComplete="new-password" />
+        <input
+          name="password"
+          placeholder="Nyt password"
+          type="password"
+          autoComplete="new-password"
+          minLength={7}
+          pattern="(?=.*[A-ZÆØÅ])(?=.*[^A-Za-z0-9ÆØÅæøå]).{7,}"
+          title={passwordRulesMessage}
+        />
         <input
           name="confirmPassword"
           placeholder="Gentag password"
           type="password"
           autoComplete="new-password"
+          minLength={7}
+          title={passwordRulesMessage}
         />
         {passwordError ? <p className="profile-form-message profile-form-error">{passwordError}</p> : null}
         {passwordMessage ? <p className="profile-form-message profile-form-success">{passwordMessage}</p> : null}
