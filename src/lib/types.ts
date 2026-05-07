@@ -1,44 +1,35 @@
 export type Profile = {
   id: string;
-  username: string;
+  email: string;
   full_name: string | null;
-  bio: string | null;
-  avatar_path: string | null;
+  phone: string | null;
+  address: string | null;
+  role: "super_admin" | "admin" | "member";
   created_at: string;
   updated_at: string;
 };
 
-export type ModuleSummary = {
+export type DashboardFile = {
   id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  accent_color: string | null;
-  sort_order: number;
-  created_at: string;
-  item_count: number;
-  next_item_at: string | null;
-};
-
-export type ModuleItem = {
-  id: string;
-  module_id: string;
-  created_by: string | null;
   title: string;
-  details: string;
-  location: string | null;
-  starts_at: string | null;
-  created_at: string;
-};
-
-export type ModuleWithItems = {
-  id: string;
-  name: string;
-  slug: string;
   description: string | null;
-  accent_color: string | null;
-  sort_order: number;
+  category: string;
+  access_level: "all" | "admins";
   created_at: string;
-  items: ModuleItem[];
+  uploaded_by: string;
+  latest_version: {
+    file_name: string | null;
+    file_path: string | null;
+    file_size: number | null;
+    mime_type: string | null;
+  } | null;
 };
 
+export type DashboardMember = {
+  id: string;
+  full_name: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string;
+  role: "super_admin" | "admin" | "member";
+};

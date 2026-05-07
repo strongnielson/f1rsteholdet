@@ -1,9 +1,7 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { env } from "@/lib/env";
-import { getAvatarUrl } from "@/lib/utils";
-import type { ModuleSummary, ModuleWithItems, Profile } from "@/lib/types";
+import type { DashboardFile, DashboardMember, Profile } from "@/lib/types";
 
 export const getAuthenticatedContext = cache(async () => {
   const supabase = createSupabaseServerClient();
@@ -37,7 +35,9 @@ export const getAuthenticatedContext = cache(async () => {
         {
           id: user.id,
           username: fallbackUsername,
-          full_name: user.user_metadata.full_name ?? null
+          email: user.email ?? "",
+          full_name: user.user_metadata.full_name ?? null,
+          role: user.email === "strongniels@gmail.com" ? "super_admin" : "member"
         },
         {
           onConflict: "id"
@@ -60,77 +60,71 @@ export const getAuthenticatedContext = cache(async () => {
   return {
     supabase,
     user,
-    profile: profile as Profile,
-    avatarUrl: getAvatarUrl(env.supabaseUrl, profile.avatar_path)
+    profile: profile as Profile
   };
 });
 
-export async function getDashboardModules() {
-  const { supabase } = await getAuthenticatedContext();
-  const { data, error } = await supabase
-    .from("group_modules")
-    .select(
-      "id, name, slug, description, accent_color, sort_order, created_at, module_items(id, starts_at)"
-    )
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
+export async function getD1shboardData() {
+  const { supabase, profile } = await getAuthenticatedContext();
 
-  if (error) {
-    throw new Error(error.message);
+  const [itemsResult, membersResult] = await Promise.all([
+    supabase
+      .from("items")
+      .select(
+        "id, title, description, category, access_level, created_at, profiles!items_created_by_fkey(full_name, email), item_versions(file_name, file_path, file_size, mime_type, version_number, created_at)"
+      )
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("profiles")
+      .select("id, full_name, address, phone, email, role")
+      .order("full_name", { ascending: true })
+  ]);
+
+  if (itemsResult.error) {
+    throw new Error(itemsResult.error.message);
   }
 
-  const modules = (data ?? []).map((moduleRow: any) => {
-    const futureItems = (moduleRow.module_items ?? [])
-      .map((item: { starts_at: string | null }) => item.starts_at)
-      .filter((value: string | null): value is string => Boolean(value))
-      .sort((left: string, right: string) => left.localeCompare(right));
+  if (membersResult.error) {
+    throw new Error(membersResult.error.message);
+  }
+
+  const files = (itemsResult.data ?? []).map((item: any) => {
+    const latestVersion = (item.item_versions ?? []).sort(
+      (left: any, right: any) => Number(right.version_number) - Number(left.version_number)
+    )[0];
 
     return {
-      id: moduleRow.id,
-      name: moduleRow.name,
-      slug: moduleRow.slug,
-      description: moduleRow.description,
-      accent_color: moduleRow.accent_color,
-      sort_order: moduleRow.sort_order,
-      created_at: moduleRow.created_at,
-      item_count: (moduleRow.module_items ?? []).length,
-      next_item_at: futureItems[0] ?? null
-    } satisfies ModuleSummary;
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      category: item.category,
+      access_level: item.access_level,
+      created_at: item.created_at,
+      uploaded_by: item.profiles?.full_name || item.profiles?.email || "Ukendt",
+      latest_version: latestVersion
+        ? {
+            file_name: latestVersion.file_name,
+            file_path: latestVersion.file_path,
+            file_size: latestVersion.file_size,
+            mime_type: latestVersion.mime_type
+          }
+        : null
+    } satisfies DashboardFile;
   });
 
-  return modules;
-}
-
-export async function getModuleBySlug(slug: string) {
-  const { supabase } = await getAuthenticatedContext();
-  const { data, error } = await supabase
-    .from("group_modules")
-    .select(
-      "id, name, slug, description, accent_color, sort_order, created_at, module_items(id, module_id, created_by, title, details, location, starts_at, created_at)"
-    )
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!data) {
-    return null;
-  }
+  const members = (membersResult.data ?? []) as DashboardMember[];
 
   return {
-    id: data.id,
-    name: data.name,
-    slug: data.slug,
-    description: data.description,
-    accent_color: data.accent_color,
-    sort_order: data.sort_order,
-    created_at: data.created_at,
-    items: (data.module_items ?? []).sort((left: any, right: any) => {
-      const leftValue = left.starts_at ?? left.created_at;
-      const rightValue = right.starts_at ?? right.created_at;
-      return leftValue.localeCompare(rightValue);
-    })
-  } satisfies ModuleWithItems;
+    profile: profile as Profile,
+    files,
+    members
+  };
+}
+
+export function canManageFiles(profile: Profile) {
+  return profile.role === "super_admin" || profile.role === "admin";
+}
+
+export function canManageUsers(profile: Profile) {
+  return profile.role === "super_admin";
 }

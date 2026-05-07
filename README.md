@@ -1,17 +1,27 @@
 # F1rsteholdet Web
 
-F1rsteholdet is a private Danish webapp for the group. The first page is the login page; authenticated members continue into a shared dashboard with modules for trips, meetings, moments, and future group needs.
+F1rsteholdet is a private Danish webapp for the group. The first page is the login page; authenticated members continue into one central dashboard, `D1shboard`, for files and member overview.
 
 ## Current Shape
 
 - Next.js App Router app deployed on Vercel
-- Supabase Auth, database, and avatar storage
+- Supabase Auth, database, and document storage
 - Single public entry page at `/`
 - Supabase callback route at `/auth/callback`
 - Protected dashboard under `/dashboard`
-- User profiles with username, full name, bio, and profile picture
-- Group modules with item collections
+- No public signup or self-registration UI
+- Profiles with email, full name, phone, address, and role
+- Generic documents through `items` and `item_versions`
+- Items can include files stored in the private `documents` storage bucket
 - Blue visual palette
+
+## Roles
+
+- `super_admin`: full access, including future user administration
+- `admin`: can create and edit items, including file uploads, and view members
+- `member`: can view allowed documents and members only
+
+The first super admin is `strongniels@gmail.com`. User creation UI is intentionally not part of this MVP.
 
 ## Docs Structure
 
@@ -55,6 +65,8 @@ Auth URL settings should include:
 
 Never expose or commit the Supabase service role key.
 
+The app removes public signup from the UI. Supabase Auth signup should also remain disabled in the Supabase dashboard for production hardening.
+
 ## Vercel
 
 Production URL:
@@ -79,8 +91,10 @@ npm run lint
 
 ## Product Notes
 
-- `/` is the login and account creation page.
+- `/` is the login page.
 - `/auth` is intentionally not a page.
 - `/auth/callback` is reserved for Supabase session exchange.
+- `/dashboard` is the only authenticated product surface for now.
 - The app is Danish-first.
 - New visible product copy should be written in Danish unless there is a clear reason not to.
+- `D1shboard` currently contains file stats, member stats, the 6. maj 2027 trip countdown, a files table, a members table, and the item form.

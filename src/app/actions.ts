@@ -1,22 +1,55 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { slugify } from "@/lib/utils";
+import type { Profile } from "@/lib/types";
+
+const categories = new Set(["Vedtægter", "Referater", "Anekdoter", "Ture", "Dokumenter", "Nyheder", "Andet"]);
+const accessLevels = new Set(["all", "admins"]);
 
 function withQuery(path: string, key: string, value: string) {
   const params = new URLSearchParams({ [key]: value });
   return `${path}?${params.toString()}`;
 }
 
-function normalizeUsername(value: string) {
-  return value.trim().toLowerCase();
+function canManageFiles(profile: Pick<Profile, "role">) {
+  return profile.role === "super_admin" || profile.role === "admin";
 }
 
-function isValidUsername(value: string) {
-  return /^[a-z0-9_]{3,24}$/.test(value);
+function cleanFileName(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+async function getSignedInProfile() {
+  const supabase = createSupabaseServerClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error || !profile) {
+    redirect(withQuery("/", "error", "Profilen kunne ikke findes."));
+  }
+
+  return {
+    supabase,
+    user,
+    profile: profile as Profile
+  };
 }
 
 export async function signIn(formData: FormData) {
@@ -36,179 +69,98 @@ export async function signIn(formData: FormData) {
   redirect("/dashboard");
 }
 
-export async function signUp(formData: FormData) {
-  const supabase = createSupabaseServerClient();
-  const headerStore = headers();
-  const origin = headerStore.get("origin") ?? "http://localhost:3000";
-
-  const username = normalizeUsername(String(formData.get("username") ?? ""));
-  const fullName = String(formData.get("fullName") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
-
-  if (!isValidUsername(username)) {
-    redirect(withQuery("/", "error", "Brugernavn skal være 3-24 tegn og må kun indeholde bogstaver, tal eller underscore."));
-  }
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        username,
-        full_name: fullName
-      },
-      emailRedirectTo: `${origin}/auth/callback`
-    }
-  });
-
-  if (error) {
-    redirect(withQuery("/", "error", error.message));
-  }
-
-  if (!data.session) {
-    redirect(withQuery("/", "message", "Bruger oprettet. Tjek din mail for at bekræfte login."));
-  }
-
-  redirect("/dashboard");
-}
-
 export async function signOut() {
   const supabase = createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/");
 }
 
-export async function createModule(formData: FormData) {
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+export async function createItem(formData: FormData) {
+  const { supabase, user, profile } = await getSignedInProfile();
 
-  if (!user) {
-    redirect("/");
+  if (!canManageFiles(profile)) {
+    redirect(withQuery("/dashboard", "error", "Du har ikke adgang til at oprette items."));
   }
 
-  const name = String(formData.get("name") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const accentColor = String(formData.get("accentColor") ?? "#215f9a").trim();
+  const category = String(formData.get("category") ?? "");
+  const accessLevel = String(formData.get("accessLevel") ?? "all");
+  const file = formData.get("file");
 
-  if (!name) {
-    redirect(withQuery("/dashboard", "error", "Module name is required."));
+  if (!title || !categories.has(category) || !accessLevels.has(accessLevel)) {
+    redirect(withQuery("/dashboard", "error", "Udfyld titel, kategori og adgang."));
   }
 
-  const baseSlug = slugify(name);
-  let slug = baseSlug || `module-${Date.now()}`;
-  let suffix = 1;
-
-  while (true) {
-    const { data: existing } = await supabase
-      .from("group_modules")
-      .select("id")
-      .eq("slug", slug)
-      .maybeSingle();
-
-    if (!existing) {
-      break;
-    }
-
-    suffix += 1;
-    slug = `${baseSlug}-${suffix}`;
+  if (!(file instanceof File) || file.size === 0) {
+    redirect(withQuery("/dashboard", "error", "Vælg en fil før du gemmer itemet."));
   }
 
-  const { error } = await supabase.from("group_modules").insert({
-    name,
-    slug,
+  const itemId = crypto.randomUUID();
+  const fileName = cleanFileName(file.name) || "fil";
+  const filePath = `${itemId}/v1-${Date.now()}-${fileName}`;
+
+  const { error: fileError } = await supabase.storage.from("documents").upload(filePath, file, {
+    cacheControl: "3600",
+    upsert: false
+  });
+
+  if (fileError) {
+    redirect(withQuery("/dashboard", "error", fileError.message));
+  }
+
+  const { error: itemError } = await supabase.from("items").insert({
+    id: itemId,
+    title,
     description: description || null,
-    accent_color: accentColor || null,
+    category,
+    access_level: accessLevel,
     created_by: user.id
   });
+
+  if (itemError) {
+    await supabase.storage.from("documents").remove([filePath]);
+    redirect(withQuery("/dashboard", "error", itemError.message));
+  }
+
+  const { error: versionError } = await supabase.from("item_versions").insert({
+    item_id: itemId,
+    version_number: 1,
+    file_path: filePath,
+    file_name: file.name,
+    file_size: file.size,
+    mime_type: file.type || null,
+    change_note: "Første version",
+    created_by: user.id
+  });
+
+  if (versionError) {
+    redirect(withQuery("/dashboard", "error", versionError.message));
+  }
+
+  revalidatePath("/dashboard");
+  redirect(withQuery("/dashboard", "message", "Itemet er gemt."));
+}
+
+export async function updateProfile(formData: FormData) {
+  const { supabase, user } = await getSignedInProfile();
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const address = String(formData.get("address") ?? "").trim();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      full_name: fullName || null,
+      phone: phone || null,
+      address: address || null
+    })
+    .eq("id", user.id);
 
   if (error) {
     redirect(withQuery("/dashboard", "error", error.message));
   }
 
   revalidatePath("/dashboard");
-  redirect(withQuery("/dashboard", "message", "Module created."));
-}
-
-export async function createModuleItem(formData: FormData) {
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/");
-  }
-
-  const moduleId = String(formData.get("moduleId") ?? "");
-  const moduleSlug = String(formData.get("moduleSlug") ?? "");
-  const title = String(formData.get("title") ?? "").trim();
-  const details = String(formData.get("details") ?? "").trim();
-  const location = String(formData.get("location") ?? "").trim();
-  const startsAt = String(formData.get("startsAt") ?? "").trim();
-
-  if (!moduleId || !moduleSlug || !title) {
-    redirect(withQuery(`/dashboard/modules/${moduleSlug}`, "error", "Item title is required."));
-  }
-
-  const { error } = await supabase.from("module_items").insert({
-    module_id: moduleId,
-    created_by: user.id,
-    title,
-    details,
-    location: location || null,
-    starts_at: startsAt || null
-  });
-
-  if (error) {
-    redirect(withQuery(`/dashboard/modules/${moduleSlug}`, "error", error.message));
-  }
-
-  revalidatePath(`/dashboard/modules/${moduleSlug}`);
-  revalidatePath("/dashboard");
-  redirect(withQuery(`/dashboard/modules/${moduleSlug}`, "message", "Item added."));
-}
-
-export async function updateProfile(formData: FormData) {
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/");
-  }
-
-  const username = normalizeUsername(String(formData.get("username") ?? ""));
-  const fullName = String(formData.get("fullName") ?? "").trim();
-  const bio = String(formData.get("bio") ?? "").trim();
-
-  if (!isValidUsername(username)) {
-    redirect(
-      withQuery(
-        "/dashboard/profile",
-        "error",
-        "Username must be 3-24 characters using only letters, numbers, or underscores."
-      )
-    );
-  }
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      username,
-      full_name: fullName || null,
-      bio: bio || null
-    })
-    .eq("id", user.id);
-
-  if (error) {
-    redirect(withQuery("/dashboard/profile", "error", error.message));
-  }
-
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/profile");
-  redirect(withQuery("/dashboard/profile", "message", "Profile updated."));
+  redirect(withQuery("/dashboard", "message", "Profilen er opdateret."));
 }
