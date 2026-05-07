@@ -1,31 +1,44 @@
 # Agent Context
 
-This file is for future Codex/agent sessions. Read it before making product, architecture, naming, security, or UX decisions.
+Read this before changing product, architecture, naming, security, or UI.
 
-## Product Direction
+## Product
 
-F1rsteholdet is a private Danish member and document hub for a group/bestyrelse.
+F1rsteholdet is a private Danish member/document hub for a group/bestyrelse.
 
-The app should stay simple, maintainable, and private by default. Prefer one clear MVP surface over adding navigation layers early.
+- Danish UI.
+- Private by default.
+- MVP simplicity over architecture.
+- One authenticated surface for now: `D1shboard`.
+- Login page is the landing page.
+- Do not reintroduce public signup.
 
-The UI language is Danish. Code can stay English, but user-visible labels and messages should be Danish unless there is a clear reason.
+## Direction
 
-## Current Product Shape
+Current app:
 
-- `/` is the landing page and login page.
-- Public signup/self-registration is removed from the UI.
-- `/dashboard` is the only authenticated product surface for now.
-- Dashboard name is `D1shboard`.
-- The visual expression is clean, restrained, and blue.
-- Desktop and mobile responsiveness matter from the beginning.
+- `/` login for existing users.
+- `/dashboard` authenticated D1shboard.
+- Sidebar with profile, password change, logout.
+- Widgets: files, members, countdown to 6. maj 2027.
+- Tables: `Filer`, `Medlemmer`.
+- `+ Tilføj fil` opens the item form.
 
-## Core Domain Model
+Near-term only when requested:
 
-The central domain object is an `item`.
+- user invite/create flow
+- item edit/view
+- version history
+- password reset email flow
+- permission tests
 
-An item can have a file upload, but upload is only part of creating or editing an item. Avoid naming components, actions, or concepts as if upload is the main object.
+## Domain Naming
 
-Use names like:
+The domain object is `item`.
+
+Uploads are part of creating/editing an item; they are not the main concept.
+
+Prefer:
 
 - `ItemForm`
 - `ItemView`
@@ -33,91 +46,64 @@ Use names like:
 - `items`
 - `item_versions`
 
-Avoid names like:
+Avoid:
 
 - `UploadModal`
 - `uploadDocument`
 - upload-first component names
 
-UI labels can still say things like `Uploadet af` or `Uploadet dato` when describing file history.
+UI can still say `Uploadet af` and `Uploadet dato` for file history.
 
-## Roles And Permissions
+## Roles
 
-Roles are prepared as:
-
-- `super_admin`: full access. For now this is only `strongniels@gmail.com`.
-- `admin`: can create/edit items and view members. Admins should not edit users yet.
-- `member`: view-only access for allowed content.
+- `super_admin`: full access. Currently only `strongniels@gmail.com`.
+- `admin`: create/edit items, view members, no user editing yet.
+- `member`: view-only for allowed content.
 
 Do not build user creation UI until explicitly requested.
 
-Do not reintroduce public signup.
+## Data
 
-## Current MVP Features
+Supabase project ref: `qqftsrdkbnvyhvjkplsh`.
 
-- Login for existing users.
-- D1shboard sidebar with profile details and logout.
-- `Rediger profil` supports full name, address, phone, and password change.
-- Top widgets:
-  - `Antal filer`
-  - `Antal medlemmer`
-  - `Næste tur om: X dage`
-- Trip date is 6. maj 2027 and countdown should stay dynamic.
-- `Filer` spreadsheet section.
-- `Medlemmer` spreadsheet section.
-- `+ Tilføj fil` opens the item form.
-- Item creation creates:
-  - one `items` row
-  - one `item_versions` row
-  - one file in the private `documents` bucket
-
-## Database And Storage
-
-Supabase is the source of truth.
-
-Important tables:
+Core tables:
 
 - `profiles`
 - `items`
 - `item_versions`
 
-Important storage bucket:
+Storage:
 
-- `documents`
+- private bucket `documents`
 
-Security posture:
+Security rules:
 
-- RLS should enforce access.
-- Service role keys must never be committed or exposed.
-- Profile self-update must not allow users to change their own `role` or `email`.
-- Document storage reads should respect item access level.
-- App-side public signup is removed; Supabase Auth signup should also remain disabled in the Supabase dashboard for production hardening.
+- RLS must enforce access.
+- Never commit or expose service role keys.
+- Users must not update their own `role` or `email`.
+- Document reads must respect item access.
+- Supabase Auth signup should stay disabled at platform level.
 
-## Infrastructure
+## Component Guideline
 
-- GitHub repo: `https://github.com/strongnielson/f1rsteholdet`
-- Production URL: `https://f1rsteholdet.vercel.app`
-- Supabase project ref: `qqftsrdkbnvyhvjkplsh`
-- Vercel project name/url should use `f1rsteholdet`.
+Components should be minimal, boring, and named after product concepts.
 
-## Documentation Policy
+- Keep components small and single-purpose.
+- Prefer server components unless interactivity is required.
+- Use client components only for local UI state, browser APIs, or Supabase session calls.
+- Keep layout density tight; avoid decorative wrappers.
+- Cards use `8px` radius.
+- Do not nest cards inside cards.
+- Do not show missing-profile placeholder text in the sidebar.
+- Use DM Sans for all text; use medium weight for headings.
+- Keep visible copy Danish.
+- Tables must stay horizontally usable on mobile.
+- Modals must stack cleanly on mobile.
 
-Keep markdown useful and non-redundant:
+## Markdown Policy
 
-- `README.md`: human setup, architecture, commands, deployment notes.
-- `CHANGELOG.md`: dated history of what changed.
-- `AGENTS.md`: durable agent context, product direction, naming rules, and decision boundaries.
+- `README.md`: run/setup/checks only.
+- `CHANGELOG.md`: dated change history only.
+- `AGENTS.md`: durable agent context and decision rules.
 
-Update `AGENTS.md` when a future decision would otherwise be lost between sessions.
-
-## Near-Term Direction
-
-Likely next steps, only when requested:
-
-- Disable Supabase Auth signup at platform level if not already done.
-- Add user invitation/creation flow for `admin` and `member`.
-- Add item edit flow.
-- Add item detail/view.
-- Add version history UI.
-- Add safer password reset flow and email templates later.
-- Add tests around permissions and item creation when complexity grows.
+Update this file when a decision would otherwise be lost between sessions.

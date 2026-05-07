@@ -25,10 +25,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   return (
     <div className="d1shboard">
       <div className="dashboard-title">
-        <div>
-          <p className="eyebrow">D1shboard</p>
-          <h1>D1shboard</h1>
-        </div>
+        <h1>D1shboard</h1>
       </div>
 
       {searchParams.error ? <MessageBanner message={searchParams.error} tone="error" /> : null}

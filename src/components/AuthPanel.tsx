@@ -27,7 +27,7 @@ export function AuthPanel({ error, message }: AuthPanelProps) {
         <form action={signIn} className="auth-form auth-form-primary">
           <div className="field field-dark">
             <label htmlFor="sign-in-email">Email</label>
-            <input id="sign-in-email" name="email" placeholder="navn@email.dk" required type="email" />
+            <input id="sign-in-email" name="email" placeholder="bøss@bass.dk" required type="email" />
           </div>
           <div className="field field-dark">
             <label htmlFor="sign-in-password">Adgangskode</label>

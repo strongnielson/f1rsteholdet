@@ -30,8 +30,8 @@ export default async function DashboardLayout({
           <ProfileAvatar name={displayName} size="md" />
           <div className="profile-lines">
             <strong>{displayName}</strong>
-            <span>{profile.address || "Adresse mangler"}</span>
-            <span>{profile.phone || "Telefon mangler"}</span>
+            {profile.address ? <span>{profile.address}</span> : null}
+            {profile.phone ? <span>{profile.phone}</span> : null}
             <span>{profile.email}</span>
           </div>
 
