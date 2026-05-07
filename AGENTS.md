@@ -96,6 +96,8 @@ Components should be minimal, boring, and named after product concepts.
 - Do not nest cards inside cards.
 - Do not show missing-profile placeholder text in the sidebar.
 - Use DM Sans for all text; use medium weight for headings.
+- Loading should stay subtle: native browser tab spinner plus a full-width animated blue faceted line.
+- Favicon is the F1 mark in `src/app/icon.svg`.
 - Keep visible copy Danish.
 - Tables must stay horizontally usable on mobile.
 - Modals must stack cleanly on mobile.
