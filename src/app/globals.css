@@ -151,17 +151,23 @@ p {
   display: grid;
   place-items: center;
   padding: 1.5rem;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(92, 143, 192, 0.24), transparent 30%),
+    radial-gradient(circle at 82% 12%, rgba(179, 209, 234, 0.34), transparent 28%),
+    radial-gradient(circle at 50% 88%, rgba(206, 226, 243, 0.48), transparent 36%),
+    linear-gradient(180deg, #fbfdff 0%, #eaf3fb 100%);
 }
 
 .auth-card {
-  width: min(100%, 420px);
+  width: min(100%, 380px);
   display: grid;
-  gap: 1.1rem;
-  padding: 1.5rem;
+  gap: 1rem;
+  padding: 1.25rem;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: var(--shadow);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 42px rgba(24, 62, 105, 0.1);
+  backdrop-filter: blur(14px);
 }
 
 .auth-header,
@@ -186,6 +192,10 @@ p {
 .auth-note {
   margin: 0;
   color: var(--muted);
+}
+
+.auth-note {
+  text-align: center;
 }
 
 .message-banner {

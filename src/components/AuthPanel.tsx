@@ -17,7 +17,6 @@ export function AuthPanel({ error, message }: AuthPanelProps) {
         </Link>
         <p className="eyebrow">Medlemslogin</p>
         <h1>Log ind</h1>
-        <p>Fortsæt til F1rsteholdets fælles rum.</p>
       </div>
 
       {error ? <MessageBanner message={error} tone="error" /> : null}
