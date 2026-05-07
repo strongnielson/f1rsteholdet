@@ -1,15 +1,15 @@
 :root {
-  --bg: #f5efe1;
-  --surface: rgba(9, 23, 39, 0.88);
-  --surface-soft: rgba(255, 248, 235, 0.78);
-  --surface-muted: rgba(13, 28, 45, 0.58);
-  --text: #131313;
-  --text-inverse: #f8f1e4;
-  --muted: #5f615f;
-  --line: rgba(18, 28, 44, 0.14);
-  --accent: #c75d2c;
-  --accent-2: #2f8f83;
-  --shadow: 0 24px 80px rgba(12, 22, 36, 0.14);
+  --bg: #eef5fb;
+  --surface: rgba(12, 31, 54, 0.9);
+  --surface-soft: rgba(248, 251, 255, 0.86);
+  --surface-muted: rgba(40, 71, 106, 0.58);
+  --text: #102033;
+  --text-inverse: #f7fbff;
+  --muted: #5f7287;
+  --line: rgba(24, 62, 105, 0.14);
+  --accent: #215f9a;
+  --accent-2: #5c8fc0;
+  --shadow: 0 24px 80px rgba(24, 62, 105, 0.14);
 }
 
 * {
@@ -26,9 +26,9 @@ body {
   color: var(--text);
   font-family: var(--font-display), sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(199, 93, 44, 0.16), transparent 28%),
-    radial-gradient(circle at top right, rgba(47, 143, 131, 0.18), transparent 24%),
-    linear-gradient(180deg, #faf4e7 0%, #f0e6d4 100%);
+    radial-gradient(circle at 20% 8%, rgba(78, 131, 181, 0.18), transparent 28%),
+    radial-gradient(circle at 80% 0%, rgba(155, 189, 220, 0.22), transparent 24%),
+    linear-gradient(180deg, #f6fbff 0%, #e6f0f8 100%);
 }
 
 a {
@@ -76,7 +76,7 @@ textarea {
 
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 18px 36px rgba(199, 93, 44, 0.25);
+  box-shadow: 0 18px 36px rgba(33, 95, 154, 0.25);
 }
 
 .button-secondary {
@@ -117,9 +117,9 @@ textarea {
 
 .field-dark input,
 .field-dark textarea {
-  background: #fffaf0;
+  background: #f8fbff;
   color: #13263b;
-  border-color: rgba(19, 38, 59, 0.12);
+  border-color: rgba(24, 62, 105, 0.14);
 }
 
 .field textarea {
@@ -157,11 +157,11 @@ textarea {
 .brand-mark {
   width: 2.6rem;
   height: 2.6rem;
-  border-radius: 18px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   color: var(--text-inverse);
-  background: linear-gradient(135deg, #13263b, #c75d2c);
+  background: linear-gradient(135deg, #102b4c, #2f7dbd);
   box-shadow: var(--shadow);
 }
 
@@ -198,7 +198,7 @@ textarea {
   inset: auto -10% -25% auto;
   width: 260px;
   height: 260px;
-  background: radial-gradient(circle, rgba(199, 93, 44, 0.38), transparent 72%);
+  background: radial-gradient(circle, rgba(47, 125, 189, 0.28), transparent 72%);
 }
 
 .eyebrow {
@@ -341,13 +341,13 @@ textarea {
 }
 
 .auth-card {
-  padding: 2rem;
+  padding: 2.25rem;
 }
 
 .auth-card-centered {
-  width: min(100%, 460px);
+  width: min(100%, 440px);
   display: grid;
-  gap: 1.5rem;
+  gap: 1.4rem;
 }
 
 .auth-header {
@@ -375,7 +375,8 @@ textarea {
 }
 
 .auth-card-light {
-  background: rgba(255, 249, 238, 0.9);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(24, 62, 105, 0.1);
 }
 
 .auth-forms {
@@ -394,13 +395,13 @@ textarea {
 }
 
 .signup-panel {
-  border-top: 1px solid rgba(19, 38, 59, 0.1);
+  border-top: 1px solid rgba(24, 62, 105, 0.1);
   padding-top: 1rem;
 }
 
 .signup-panel summary {
   cursor: pointer;
-  color: #102234;
+  color: var(--accent);
   font-weight: 700;
   text-align: center;
 }
@@ -417,8 +418,8 @@ textarea {
 }
 
 .message-success {
-  background: rgba(47, 143, 131, 0.14);
-  color: #14594f;
+  background: rgba(33, 95, 154, 0.12);
+  color: #174d7f;
 }
 
 .dashboard-shell {
@@ -451,8 +452,8 @@ textarea {
 .profile-card,
 .timeline-card {
   padding: 1.5rem;
-  background: rgba(255, 249, 238, 0.9);
-  border: 1px solid rgba(19, 38, 59, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(24, 62, 105, 0.08);
 }
 
 .dashboard-sidebar-card-dark {
@@ -494,8 +495,8 @@ textarea {
   display: grid;
   gap: 1rem;
   padding: 1.4rem;
-  background: rgba(255, 249, 238, 0.95);
-  border: 1px solid rgba(19, 38, 59, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(24, 62, 105, 0.08);
 }
 
 .module-card-accent {
@@ -568,7 +569,7 @@ textarea {
   place-items: center;
   overflow: hidden;
   border-radius: 50%;
-  background: linear-gradient(135deg, #16304a, #c75d2c);
+  background: linear-gradient(135deg, #102b4c, #2f7dbd);
   color: var(--text-inverse);
   font-weight: 700;
 }

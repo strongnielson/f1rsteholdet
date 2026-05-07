@@ -16,12 +16,12 @@ const serifFont = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: "F1rsteholdet",
-  description: "A shared digital home for trips, meetings, and great moments together."
+  description: "F1rsteholdets fælles digitale rum."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="da">
       <body className={`${displayFont.variable} ${serifFont.variable}`}>{children}</body>
     </html>
   );

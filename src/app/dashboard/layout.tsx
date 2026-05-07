@@ -36,7 +36,7 @@ export default async function DashboardLayout({
             <div className="dashboard-sidebar-links">
               <Link href="/dashboard">Overview</Link>
               <Link href="/dashboard/profile">Profile</Link>
-              <Link href="/">Public landing page</Link>
+              <Link href="/">Login</Link>
             </div>
           </div>
         </aside>

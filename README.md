@@ -1,78 +1,86 @@
 # F1rsteholdet Web
 
-`F1rsteholdet` is set up here as a Vercel-native Next.js app backed by Supabase for auth, database, and avatar storage.
+F1rsteholdet is a private Danish webapp for the group. The first page is the login page; authenticated members continue into a shared dashboard with modules for trips, meetings, moments, and future group needs.
 
-## What is included
+## Current Shape
 
-- App Router Next.js foundation in `src/`
-- Supabase SSR auth with protected dashboard routes
-- Profile records with username, full name, bio, and profile picture upload
-- Flexible "modules" with item collections for trips, meetings, and memories
-- Supabase SQL migration in `supabase/migrations/`
-- GitHub + Vercel + Supabase setup guide below
+- Next.js App Router app deployed on Vercel
+- Supabase Auth, database, and avatar storage
+- Single public entry page at `/`
+- Supabase callback route at `/auth/callback`
+- Protected dashboard under `/dashboard`
+- User profiles with username, full name, bio, and profile picture
+- Group modules with item collections
+- Blue visual palette
 
-## Local setup
+## Docs Structure
+
+Keep docs intentionally small:
+
+- `README.md`: current project setup, architecture, and operating notes
+- `CHANGELOG.md`: dated progress history
+
+Do not add extra markdown files unless they have a distinct long-term purpose. If decision history becomes important, add `DECISIONS.md` later and keep it focused on product/architecture choices only.
+
+## Local Setup
 
 1. Install Node.js 20 or newer.
-2. From `F1rsteholdet/`, run `npm install`.
-3. Copy `.env.example` to `.env.local`.
-4. Add your Supabase project URL and anon key.
-5. Run the SQL migration in Supabase:
+2. Install dependencies:
 
-```sql
--- paste the file from supabase/migrations/202605050001_initial_schema.sql
+```bash
+npm install
 ```
 
-6. Start the app:
+3. Create `.env.local` from `.env.example`.
+4. Add Supabase project URL and anon key.
+5. Start the app:
 
 ```bash
 npm run dev
 ```
 
-## Supabase setup
+## Supabase
 
-1. Create a new Supabase project.
-2. In `Authentication > URL Configuration`, add:
-   - Site URL: your eventual Vercel URL
-   - Redirect URL: `https://your-domain.com/auth/callback`
-   - For local dev also add `http://localhost:3000/auth/callback`
-3. Run the migration SQL from `supabase/migrations/202605050001_initial_schema.sql`.
-4. Copy the project URL and anon key into `F1rsteholdet/.env.local`.
-
-## GitHub and Vercel flow
-
-1. Initialize git at the repo root if it is not already a git repository:
+Run migrations with:
 
 ```bash
-git init
-git add .
-git commit -m "Add F1rsteholdet web app foundation"
+supabase db push
 ```
 
-2. Create a GitHub repository and push:
+Auth URL settings should include:
+
+- Site URL: `https://f1rsteholdet.vercel.app`
+- Redirect URL: `https://f1rsteholdet.vercel.app/auth/callback`
+- Local redirect URL: `http://localhost:3000/auth/callback`
+
+Never expose or commit the Supabase service role key.
+
+## Vercel
+
+Production URL:
+
+```text
+https://f1rsteholdet.vercel.app
+```
+
+Required environment variables:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
+
+## Commands
 
 ```bash
-git remote add origin <your-github-repo-url>
-git push -u origin main
+npm run build
+npm run lint
 ```
 
-3. In Vercel:
-   - Import the GitHub repository
-   - Use the repository root as the project root
-   - Add `NEXT_PUBLIC_SUPABASE_URL`
-   - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - Deploy
+## Product Notes
 
-Every push to GitHub will then trigger a Vercel deployment.
-
-## Product shape
-
-- Public landing page that explains the group and invites members in
-- Auth page for sign in and account creation
-- Protected dashboard with module overview
-- Module detail pages with item creation for plans, trips, meetings, and shared moments
-- Profile page with editable username, name, bio, and avatar
-
-## Important assumption
-
-Auth is implemented as email + password with a required username profile. That keeps the integration clean with Supabase Auth while still giving every member a visible username.
+- `/` is the login and account creation page.
+- `/auth` is intentionally not a page.
+- `/auth/callback` is reserved for Supabase session exchange.
+- The app is Danish-first.
+- New visible product copy should be written in Danish unless there is a clear reason not to.

@@ -9,7 +9,7 @@ type ModuleCardProps = {
 export function ModuleCard({ module }: ModuleCardProps) {
   return (
     <Link className="module-card" href={`/dashboard/modules/${module.slug}`}>
-      <div className="module-card-accent" style={{ background: module.accent_color ?? "#b6522f" }} />
+      <div className="module-card-accent" style={{ background: module.accent_color ?? "#215f9a" }} />
       <div className="module-card-copy">
         <p className="eyebrow">Module</p>
         <h3>{module.name}</h3>
@@ -22,4 +22,3 @@ export function ModuleCard({ module }: ModuleCardProps) {
     </Link>
   );
 }
-

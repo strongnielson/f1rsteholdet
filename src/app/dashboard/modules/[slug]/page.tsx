@@ -30,7 +30,7 @@ export default async function ModuleDetailPage({ params, searchParams }: ModuleD
           <span className="module-pill">
             <span
               className="module-card-accent"
-              style={{ background: moduleData.accent_color ?? "#b6522f", width: "1.2rem", height: "1.2rem" }}
+              style={{ background: moduleData.accent_color ?? "#215f9a", width: "1.2rem", height: "1.2rem" }}
             />
             Module
           </span>
@@ -99,4 +99,3 @@ export default async function ModuleDetailPage({ params, searchParams }: ModuleD
     </div>
   );
 }
-

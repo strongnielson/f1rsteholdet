@@ -12,7 +12,7 @@ export const getAuthenticatedContext = cache(async () => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth");
+    redirect("/");
   }
 
   let { data: profile } = await supabase

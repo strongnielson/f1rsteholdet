@@ -61,7 +61,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
           <div className="field field-dark">
             <label htmlFor="module-accent">Accent color</label>
-            <input id="module-accent" name="accentColor" placeholder="#b6522f" type="text" />
+            <input id="module-accent" name="accentColor" placeholder="#215f9a" type="text" />
           </div>
           <button className="button" type="submit">
             Create module
@@ -71,4 +71,3 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     </div>
   );
 }
-

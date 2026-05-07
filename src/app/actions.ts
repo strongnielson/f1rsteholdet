@@ -30,7 +30,7 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
-    redirect(withQuery("/auth", "error", error.message));
+    redirect(withQuery("/", "error", "Email eller adgangskode er ikke korrekt."));
   }
 
   redirect("/dashboard");
@@ -47,7 +47,7 @@ export async function signUp(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   if (!isValidUsername(username)) {
-    redirect(withQuery("/auth", "error", "Username must be 3-24 characters using only letters, numbers, or underscores."));
+    redirect(withQuery("/", "error", "Brugernavn skal være 3-24 tegn og må kun indeholde bogstaver, tal eller underscore."));
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -63,11 +63,11 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    redirect(withQuery("/auth", "error", error.message));
+    redirect(withQuery("/", "error", error.message));
   }
 
   if (!data.session) {
-    redirect(withQuery("/auth", "message", "Account created. Check your email to confirm the sign-in link."));
+    redirect(withQuery("/", "message", "Bruger oprettet. Tjek din mail for at bekræfte login."));
   }
 
   redirect("/dashboard");
@@ -86,12 +86,12 @@ export async function createModule(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth");
+    redirect("/");
   }
 
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const accentColor = String(formData.get("accentColor") ?? "#b6522f").trim();
+  const accentColor = String(formData.get("accentColor") ?? "#215f9a").trim();
 
   if (!name) {
     redirect(withQuery("/dashboard", "error", "Module name is required."));
@@ -139,7 +139,7 @@ export async function createModuleItem(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth");
+    redirect("/");
   }
 
   const moduleId = String(formData.get("moduleId") ?? "");
@@ -178,7 +178,7 @@ export async function updateProfile(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth");
+    redirect("/");
   }
 
   const username = normalizeUsername(String(formData.get("username") ?? ""));
