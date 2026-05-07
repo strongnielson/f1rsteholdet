@@ -11,6 +11,7 @@ F1rsteholdet is a private Danish webapp for the group. The first page is the log
 - Protected dashboard under `/dashboard`
 - No public signup or self-registration UI
 - Profiles with email, full name, phone, address, and role
+- Logged-in users can edit their own profile basics and change their own password
 - Generic documents through `items` and `item_versions`
 - Items can include files stored in the private `documents` storage bucket
 - Blue visual palette

@@ -690,6 +690,15 @@ select {
   margin-top: 0.75rem;
 }
 
+.profile-password-form {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 0.9rem;
+}
+
+.profile-password-form strong {
+  color: var(--text-inverse);
+}
+
 .profile-edit-form input {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -701,6 +710,21 @@ select {
 
 .profile-edit-form input::placeholder {
   color: rgba(247, 251, 255, 0.58);
+}
+
+.profile-form-message {
+  margin: 0;
+  font-size: 0.86rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.profile-form-error {
+  color: #ffd2d2;
+}
+
+.profile-form-success {
+  color: #c5f3d5;
 }
 
 .sidebar-plain-button {

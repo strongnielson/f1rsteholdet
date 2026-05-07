@@ -8,6 +8,7 @@
 - Added the item form with Danish fields, access levels, drag/drop file support, and first-version creation.
 - Prepared role structure for `super_admin`, `admin`, and `member`.
 - Added Supabase schema for profiles, generic `items`, `item_versions`, and private document storage.
+- Added password change inside `Rediger profil` for logged-in users.
 - Removed public signup from the login UI.
 - Removed the old separate module/profile pages from the authenticated MVP surface.
 - Made `/` the single public login page.
