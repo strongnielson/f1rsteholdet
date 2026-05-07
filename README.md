@@ -30,6 +30,7 @@ Keep docs intentionally small:
 
 - `README.md`: current project setup, architecture, and operating notes
 - `CHANGELOG.md`: dated progress history
+- `AGENTS.md`: durable context for future Codex/agent sessions
 
 Do not add extra markdown files unless they have a distinct long-term purpose. If decision history becomes important, add `DECISIONS.md` later and keep it focused on product/architecture choices only.
 

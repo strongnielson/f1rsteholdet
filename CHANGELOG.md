@@ -2,6 +2,7 @@
 
 ## 2026-05-07
 
+- Added `AGENTS.md` as durable context for future Codex/agent sessions.
 - Built the first authenticated MVP version of `D1shboard`.
 - Added one central dashboard with file count, member count, and dynamic countdown to 6. maj 2027.
 - Added spreadsheet-style sections for `Filer` and `Medlemmer`.
